@@ -65,7 +65,10 @@ public class GameManager : MonoBehaviour
 
     private void CountProp()
     {
-        textCount.text = countProp + " /" + countTotal;
+        if (countTotal <= 10)
+            textCount.text = countProp + " / " + countTotal;
+        else
+            textCount.text = countProp + " /" + countTotal;
     }
 
     public void Eat(string prop)
