@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     public CanvasGroup final;
     public Text textTitle;
 
+    [Header("操控角色")]
+    public Player player;
+
     /// <summary>
     /// 道具總數
     /// </summary>
@@ -28,7 +31,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 遊戲時間
     /// </summary>
-    private float gameTime = 300;
+    private float gameTime = 500;
     #endregion
 
     #region method
@@ -43,27 +46,88 @@ public class GameManager : MonoBehaviour
         int total = count + Random.Range(-5, 5);
 
         for (int i = 0; i < total; i++)
-            Instantiate(prop, new Vector3(Random.Range(-9, 10), 1.5f, Random.Range(-9, 10)), Quaternion.identity);
+            Instantiate(prop, new Vector3(Random.Range(-9, 10), Random.Range(1f, 3f), Random.Range(-9, 10)), Quaternion.identity);
         
         return total;
     }
 
     private void CountTime()
     {
+        if (final.alpha == 1) return;
+
         gameTime -= Time.deltaTime * 5;
+        gameTime = Mathf.Clamp(gameTime, 0f, 9999f);
+
         textTime.text = gameTime.ToString("f0");
+
+        Lose();
     }
 
+    private void CountProp()
+    {
+        textCount.text = countProp + " /" + countTotal;
+    }
+
+    public void Eat(string prop)
+    {
+        switch (prop)
+        {
+            case "good":
+                countProp++;
+                Win();
+                break;
+            case "bad":
+                gameTime -= 10;
+                break;
+        }
+    }
+
+    private void Win()
+    {
+        if (countProp == countTotal)
+        {
+            final.alpha = 1;
+            final.interactable = true;
+            final.blocksRaycasts = true;
+            textTitle.text = "所有雞腿都吃光啦!";
+            player.Win();
+        }
+    }
+
+    private void Lose()
+    {
+        if (gameTime == 0f)
+        {
+            final.alpha = 1;
+            final.interactable = true;
+            final.blocksRaycasts = true;
+            textTitle.text = "時間到!";
+            player.Lose();
+        }
+            
+    }
+
+    public void Retry()
+    {
+        Application.LoadLevel(Application.loadedLevel);
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
     #endregion
 
     #region events
     private void Start()
     {
-        countTotal = GenerateProps(props[0], 20);
+        countTotal = GenerateProps(props[0], 10);
+        GenerateProps(props[1], 10);
     }
     private void Update()
     {
         CountTime();
+        CountProp();
     }
     #endregion
 

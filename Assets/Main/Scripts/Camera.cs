@@ -17,7 +17,7 @@ public class Camera : MonoBehaviour
     private void Track()
     {
         Vector3 posTrack = player.position;
-        posTrack.y += 2f;
+        posTrack.y += 3f;
         posTrack.z += 4f;
 
         Vector3 posCam = transform.position;
